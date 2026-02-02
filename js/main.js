@@ -50,41 +50,25 @@ function logout() {
   });
 }
 
-// Function to upload file to Firebase Storage with progress
+// Function to convert file to base64 data URL
+function fileToDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Function to upload file data to Firebase Realtime Database
 async function uploadFile(file) {
   const user = firebase.auth().currentUser;
   if (!user) throw new Error('User not authenticated');
 
-  const storageRef = firebase.storage().ref();
-  const fileRef = storageRef.child(`moments/${user.uid}/${Date.now()}_${file.name}`);
+  // Convert file to base64 data URL
+  const dataURL = await fileToDataURL(file);
 
-  // Use uploadBytesResumable for progress tracking
-  const uploadTask = firebase.storage().uploadBytesResumable(fileRef, file);
-
-  return new Promise((resolve, reject) => {
-    uploadTask.on('state_changed',
-      (snapshot) => {
-        // Progress function
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
-        // You can update UI here if needed
-      },
-      (error) => {
-        // Error function
-        console.error('Upload error:', error);
-        reject(error);
-      },
-      async () => {
-        // Complete function
-        try {
-          const downloadURL = await firebase.storage().getDownloadURL(uploadTask.snapshot.ref);
-          resolve(downloadURL);
-        } catch (error) {
-          reject(error);
-        }
-      }
-    );
-  });
+  return dataURL;
 }
 
 // Function to add a new moment with file upload
@@ -121,15 +105,17 @@ async function addMoment(title, file) {
       title: title.trim(),
       img: isVideo ? null : downloadURL,
       source: isVideo ? downloadURL : null,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt: Date.now(),
       userId: user.uid,
       userEmail: user.email,
       fileType: file.type
     };
 
-    // Save to Firestore
-    const docRef = await firebase.firestore().collection('moments').add(momentData);
-    console.log('Moment added with ID:', docRef.id);
+    // Save to Firebase Realtime Database
+    const momentsRef = db.ref('moments');
+    const newMomentRef = momentsRef.push();
+    await newMomentRef.set(momentData);
+    console.log('Moment added with ID:', newMomentRef.key);
 
     // Reset form
     document.getElementById('add-moment-form').reset();
@@ -179,41 +165,54 @@ function handleAddMoment(event) {
 // }
 
 
-// Render Moments from Firestore
-async function loadMoments() {
+// Render Moments from Firebase Realtime Database
+function loadMoments() {
     const container = document.getElementById('gallery-container');
     if (!container) return;
 
     container.innerHTML = "<p>Loading moments...</p>";
 
-    try {
-        const querySnapshot = await firebase.firestore().collection('moments').orderBy('createdAt', 'desc').get();
+    const momentsRef = db.ref('moments');
+
+    momentsRef.on('value', (snapshot) => {
         container.innerHTML = "";
 
-        querySnapshot.forEach((doc) => {
-            const moment = doc.data();
-            // Cek apakah ini video atau gambar
-            if (moment.source) {
-                // Template untuk VIDEO
-                container.innerHTML += `
-                    <div class="moment-card" onclick="openModalVideo('${moment.source}', '${moment.title}')">
-                        <video src="${moment.source}" muted></video>
-                        <div class="play-overlay"><i class="fa-solid fa-play"></i></div>
-                    </div>
-                `;
-            } else {
-                // Template untuk GAMBAR
-                container.innerHTML += `
-                    <div class="moment-card" onclick="openModal('${moment.img}', '${moment.title}')">
-                        <img src="${moment.img}" alt="${moment.title}" onerror="this.src='https://via.placeholder.com'">
-                    </div>
-                `;
-            }
-        });
-    } catch (error) {
+        if (snapshot.exists()) {
+            const moments = snapshot.val();
+            const momentsArray = Object.keys(moments).map(key => ({
+                id: key,
+                ...moments[key]
+            }));
+
+            // Sort by createdAt descending
+            momentsArray.sort((a, b) => b.createdAt - a.createdAt);
+
+            momentsArray.forEach((moment) => {
+                // Cek apakah ini video atau gambar
+                if (moment.source) {
+                    // Template untuk VIDEO
+                    container.innerHTML += `
+                        <div class="moment-card" onclick="openModalVideo('${moment.source}', '${moment.title}')">
+                            <video src="${moment.source}" muted></video>
+                            <div class="play-overlay"><i class="fa-solid fa-play"></i></div>
+                        </div>
+                    `;
+                } else {
+                    // Template untuk GAMBAR
+                    container.innerHTML += `
+                        <div class="moment-card" onclick="openModal('${moment.img}', '${moment.title}')">
+                            <img src="${moment.img}" alt="${moment.title}" onerror="this.src='https://via.placeholder.com'">
+                        </div>
+                    `;
+                }
+            });
+        } else {
+            container.innerHTML = "<p>No moments yet. Be the first to add one!</p>";
+        }
+    }, (error) => {
         console.error('Error loading moments:', error);
         container.innerHTML = "<p>Error loading moments. Please try again.</p>";
-    }
+    });
 }
 
 // Show add moment form for authenticated users
