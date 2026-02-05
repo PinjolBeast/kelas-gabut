@@ -1068,13 +1068,23 @@ footer {
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   /* Prevent horizontal scroll */
-  body {
+  body, html {
     overflow-x: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   /* Navigation */
   nav {
     padding: 15px 5%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .hamburger {
@@ -1111,6 +1121,8 @@ footer {
   .section {
     padding: 40px 5%;
     overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .section-title {
@@ -1119,11 +1131,17 @@ footer {
   }
 
   /* Hierarchy Levels */
+  .hierarchy-container {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
   .hierarchy-level {
     flex-direction: column;
     gap: 20px;
     width: 100%;
     box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   /* Cards */
@@ -1131,16 +1149,31 @@ footer {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .p-img-container {
     width: 100px;
     height: 100px;
+    max-width: 100%;
+  }
+
+  .p-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .p-img-small {
     width: 60px;
     height: 60px;
+    max-width: 100%;
+  }
+
+  .p-img-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   /* Staff Grid */
@@ -1148,9 +1181,15 @@ footer {
     grid-template-columns: 1fr;
     gap: 15px;
     width: 100%;
+    overflow-x: hidden;
   }
 
   /* Slider */
+  .slider-container {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
   .slider-btn {
     display: none; /* Hide buttons on mobile, use touch scroll */
   }
@@ -1159,11 +1198,13 @@ footer {
     max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    width: 100%;
   }
 
   .slider-wrapper .p-card {
     width: 200px;
     flex-shrink: 0;
+    max-width: 200px;
   }
 
   /* Trailer */
@@ -1171,16 +1212,19 @@ footer {
     padding: 0;
     width: 100%;
     box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .trailer-container {
     max-width: 100%;
     width: 100%;
+    overflow-x: hidden;
   }
 
   .trailer-video {
     width: 100%;
     height: auto;
+    max-width: 100%;
   }
 
   .trailer-overlay h2 {
@@ -1193,12 +1237,23 @@ footer {
 
   /* Hide decorative photos on mobile to prevent overflow */
   .decor-photo {
-    display: none;
+    display: none !important;
   }
 
   /* Footer */
   footer {
     padding: 30px 5%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .footer-content {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .footer-social {
     width: 100%;
     box-sizing: border-box;
   }
@@ -1208,9 +1263,23 @@ footer {
   }
 
   /* Project content */
+  .project-container {
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .project-card {
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
   .project-content {
     flex-direction: column;
     gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .project-poster {
@@ -1218,10 +1287,18 @@ footer {
     max-width: 250px;
     height: auto;
     margin: 0 auto;
+    overflow-x: hidden;
   }
 
   .project-poster img {
     width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+  /* Images and videos */
+  img, video {
+    max-width: 100%;
     height: auto;
   }
 }
