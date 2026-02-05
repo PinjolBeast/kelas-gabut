@@ -268,7 +268,9 @@ function startAutoSlide(sliderId, interval = 3000) {
 // Function to toggle mobile menu
 function toggleMenu() {
     const navLinks = document.querySelector('.nav-links');
+    const hamburger = document.querySelector('.hamburger');
     navLinks.classList.toggle('active');
+    hamburger.classList.toggle('active');
 }
 
 // Initialize rendering on DOM load

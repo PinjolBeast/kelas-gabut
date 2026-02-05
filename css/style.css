@@ -1067,6 +1067,11 @@ footer {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+
   /* Navigation */
   nav {
     padding: 15px 5%;
@@ -1105,6 +1110,7 @@ footer {
   /* Section */
   .section {
     padding: 40px 5%;
+    overflow-x: hidden;
   }
 
   .section-title {
@@ -1116,12 +1122,32 @@ footer {
   .hierarchy-level {
     flex-direction: column;
     gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Cards */
+  .p-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .p-img-container {
+    width: 100px;
+    height: 100px;
+  }
+
+  .p-img-small {
+    width: 60px;
+    height: 60px;
   }
 
   /* Staff Grid */
   .staff-grid {
     grid-template-columns: 1fr;
     gap: 15px;
+    width: 100%;
   }
 
   /* Slider */
@@ -1131,19 +1157,30 @@ footer {
 
   .slider-wrapper {
     max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .slider-wrapper .p-card {
     width: 200px;
+    flex-shrink: 0;
   }
 
   /* Trailer */
   .trailer-wrapper {
     padding: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .trailer-container {
     max-width: 100%;
+    width: 100%;
+  }
+
+  .trailer-video {
+    width: 100%;
+    height: auto;
   }
 
   .trailer-overlay h2 {
@@ -1154,12 +1191,37 @@ footer {
     font-size: 0.75rem;
   }
 
+  /* Hide decorative photos on mobile to prevent overflow */
+  .decor-photo {
+    display: none;
+  }
+
   /* Footer */
   footer {
     padding: 30px 5%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .footer-social a {
     font-size: 1.2rem;
+  }
+
+  /* Project content */
+  .project-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .project-poster {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .project-poster img {
+    width: 100%;
+    height: auto;
   }
 }
